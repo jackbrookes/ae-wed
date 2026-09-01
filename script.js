@@ -30,7 +30,6 @@
 
   const inkSelector = [
     '[data-ink]',
-    '.scroll-cue > span',
     '.section-label',
     '.names__intro',
     '.photo figcaption',
