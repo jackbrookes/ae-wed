@@ -28,11 +28,78 @@
     maximumBlurPx: 5.5,
   });
 
+  // Personal contact and banking details are stored as a reversed encoded payload,
+  // then assembled in the browser. This discourages simple source-scraping bots;
+  // it is intentionally not presented as strong encryption.
+  const privatePayload = '==QfiADNxAyN4YDI2cDI3YjMrIiOikXYsB3cpRUZu9GawJCLiADNxcDO2YzN3YjMiojIl52boBnIsISQOF0VTR1TCJiOiknc05WdvNmIsICWHdlQOJVSGJiOiQnZpd3ciwiIyUDM5IDN0cjMyYjI6ICduV3bjNWYiwiIFxUQItUQNByROV0UJJUQIRlTgU0QJ5UVFJiOiUWbh5mIsIiQC5kRiojIr5WYiJye';
+  const privateDetails = JSON.parse(atob([...privatePayload].reverse().join('')));
+  const bankFields = ['bank', 'name', 'account', 'swift', 'country'];
+  const bankSummary = bankFields
+    .map((field) => `${field === 'swift' ? 'SWIFT' : field[0].toUpperCase() + field.slice(1)}: ${privateDetails[field]}`)
+    .join('\n');
+
+  bankFields.forEach((field) => {
+    const target = document.querySelector(`[data-bank-field="${field}"]`);
+    if (target) target.textContent = privateDetails[field];
+  });
+
+  const whatsappLink = document.querySelector('[data-whatsapp-link]');
+  const whatsappLabel = document.querySelector('[data-whatsapp-label]');
+  if (whatsappLink) {
+    const message = "Hello Anthony and Eunice, I'd like to RSVP for your wedding celebrations.";
+    whatsappLink.href = `https://wa.me/${privateDetails.phone}?text=${encodeURIComponent(message)}`;
+    whatsappLink.setAttribute(
+      'aria-label',
+      `RSVP to Anthony and Eunice on WhatsApp at ${privateDetails.phoneDisplay}`,
+    );
+  }
+  if (whatsappLabel) whatsappLabel.textContent = privateDetails.phoneDisplay;
+
+  const copyPlainText = async (value) => {
+    if (navigator.clipboard?.writeText && window.isSecureContext) {
+      await navigator.clipboard.writeText(value);
+      return;
+    }
+
+    const textarea = document.createElement('textarea');
+    textarea.value = value;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.append(textarea);
+    textarea.select();
+    const copied = document.execCommand('copy');
+    textarea.remove();
+    if (!copied) throw new Error('Copy command was unavailable');
+  };
+
+  const copyBankButton = document.querySelector('[data-copy-bank]');
+  const copyLabel = document.querySelector('[data-copy-label]');
+  const copyStatus = document.querySelector('[data-copy-status]');
+  if (copyBankButton) {
+    copyBankButton.disabled = false;
+    copyBankButton.addEventListener('click', async () => {
+      copyBankButton.disabled = true;
+      try {
+        await copyPlainText(bankSummary);
+        if (copyLabel) copyLabel.textContent = 'Copied';
+        if (copyStatus) copyStatus.textContent = 'Bank details copied to your clipboard.';
+      } catch {
+        if (copyLabel) copyLabel.textContent = 'Copy bank details';
+        if (copyStatus) copyStatus.textContent = 'Copy failed. Please select the details above.';
+      } finally {
+        copyBankButton.disabled = false;
+        window.setTimeout(() => {
+          if (copyLabel) copyLabel.textContent = 'Copy bank details';
+          if (copyStatus) copyStatus.textContent = '';
+        }, 3000);
+      }
+    });
+  }
+
   const inkSelector = [
     '[data-ink]',
     '.section-label',
-    '.names__intro',
-    '.photo figcaption',
     '.events-intro > p:last-child',
     '.event__number',
     '.event h2',
@@ -40,6 +107,13 @@
     '.event__details dt',
     '.event__details dd',
     '.map-card a',
+    '.dress-code__intro',
+    '.dress-code__item h3',
+    '.dress-code__item p',
+    '.gifting__message',
+    '.gifting__note',
+    '.bank-details dt',
+    '.bank-details dd',
     '.rsvp__note',
     '.rsvp__button',
     '.closing__date',
@@ -302,13 +376,6 @@
     { rootMargin: '0px 0px -10% 0px', threshold: 0.12 },
   );
   document.querySelectorAll('.reveal-on-scroll').forEach((element) => observer.observe(element));
-
-  // Keep remote placeholder failures presentable when the page is previewed offline.
-  document.querySelectorAll('.photo img').forEach((image) => {
-    const markAsMissing = () => image.closest('.photo__mat')?.classList.add('photo__mat--empty');
-    image.addEventListener('error', markAsMissing, { once: true });
-    if (image.complete && image.naturalWidth === 0) markAsMissing();
-  });
 
   measureAll();
   window.addEventListener('scroll', requestUpdate, { passive: true });

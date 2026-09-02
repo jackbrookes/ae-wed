@@ -12,13 +12,16 @@ A shared design project for Anthony and Eunice's wedding celebrations in Novembe
 
 ## Event details
 
-| Event | Date |
-| --- | --- |
-| Patlo / Magadi | 26 November 2026 |
-| Wedding ceremony | 28 November 2026 |
-| Kgoroso ya Ngwetsi | 30 November 2026 |
+| Event | Date | Time | Location |
+| --- | --- | --- | --- |
+| Patlo / Magadi | 26 November 2026 | 6:00 am | Mmankgodi |
+| Wedding ceremony | 28 November 2026 | 12 noon | Cathedral of the Holy Cross, Gaborone |
+| Reception | 28 November 2026 | 3:00 pm | Grand Bay Botanical Gardens |
+| Kgoroso ya Ngwetsi | 29 November 2026 | 9:00 am | Kanye |
 
-Venues, times, directions, RSVP details, dress code, registry information, and final wording are still to be confirmed.
+The website also includes the Royal Elegance dress code (Royal Blue and Royal Burgundy
+for ladies; Antique Gold and Charcoal for gentlemen), a gifting section with one-click
+bank-detail copying, venue directions, and WhatsApp RSVP contact details.
 
 ## Design direction
 
@@ -59,12 +62,12 @@ The invitation is a dependency-free static site. From this directory, run:
 python -m http.server 4173 --bind 127.0.0.1
 ```
 
-Then open [http://127.0.0.1:4173](http://127.0.0.1:4173). The Google Fonts,
-placeholder photographs, and map embeds need an internet connection; graceful visual
-fallbacks are included for offline previews.
+Then open [http://127.0.0.1:4173](http://127.0.0.1:4173). Google Fonts and map embeds
+need an internet connection; the rest of the invitation remains usable offline.
 
-The event times and venue pins are deliberately marked as placeholders until the final
-logistics are confirmed.
+Bank and WhatsApp values are assembled from an encoded JavaScript payload to discourage
+basic source-scraping bots. This is obfuscation, not encryption: details shown publicly in
+a browser should still be treated as public information.
 
 ## Reference material
 
@@ -81,8 +84,7 @@ The original visual reference is stored at [`references/anthony-eunice-invitatio
 
 ## Next steps
 
-1. Confirm the content, venues, timings, RSVP flow, and required website sections.
+1. Proof the confirmed content, venue links, timings, RSVP flow, and bank details.
 2. Define the shared brand kit: colours, typefaces, monogram, borders, ornaments, and icons.
-3. Create the responsive website structure and a reusable component system.
-4. Apply the same system to the programme, menu, and drink-label layouts.
-5. Review digital and printed proofs together for visual consistency and accuracy.
+3. Apply the same system to the programme, menu, and drink-label layouts.
+4. Review digital and printed proofs together for visual consistency and accuracy.
