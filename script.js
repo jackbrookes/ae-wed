@@ -173,6 +173,7 @@
 
   const backgroundAudio = document.querySelector('[data-background-audio]');
   const audioToggle = document.querySelector('[data-audio-toggle]');
+  let startBackgroundAudio = () => Promise.resolve(false);
   if (backgroundAudio && audioToggle) {
     backgroundAudio.volume = 0.5;
     backgroundAudio.loop = true;
@@ -189,17 +190,23 @@
       audioToggle.setAttribute('title', `${isPlaying ? 'Pause' : 'Play'} background music`);
     };
 
-    const tryStartAudio = () => {
-      backgroundAudio.play().then(syncAudioButton).catch(syncAudioButton);
+    startBackgroundAudio = () => {
+      return backgroundAudio.play().then(() => {
+        syncAudioButton();
+        return true;
+      }).catch(() => {
+        syncAudioButton();
+        return false;
+      });
     };
 
     audioToggle.addEventListener('click', () => {
       if (backgroundAudio.paused) {
-        backgroundAudio.play().catch(syncAudioButton);
+        startBackgroundAudio();
       } else {
         backgroundAudio.pause();
+        syncAudioButton();
       }
-      syncAudioButton();
     });
 
     backgroundAudio.addEventListener('play', syncAudioButton);
@@ -210,7 +217,7 @@
     window.addEventListener('blur', () => backgroundAudio.pause());
     window.addEventListener('pagehide', () => backgroundAudio.pause());
 
-    tryStartAudio();
+    syncAudioButton();
   }
 
   const inkSelector = [
@@ -497,18 +504,23 @@
   reducedMotion.addEventListener?.('change', requestUpdate);
   document.fonts?.ready.then(measureAll);
 
-  // Gently invite visitors into the page until they take control of scrolling.
-  // This is intentionally disabled for reduced-motion preferences.
+  // Opening the invitation is both the ceremonial reveal and the user gesture
+  // browsers require before playing music with sound.
+  const revealButton = document.querySelector('[data-invitation-reveal]');
+  const hero = document.querySelector('.hero');
   const autoScroll = {
     speed: 70,
+    startingSpeed: 8,
+    accelerationDuration: 5000,
     frameId: null,
     lastTimestamp: null,
+    startedAt: null,
     position: window.scrollY,
-    stopped: reducedMotion.matches || window.scrollY > 4,
+    stopped: true,
   };
 
   const stopAutoScroll = (event) => {
-    if (event?.target?.closest?.('[data-audio-toggle]')) return;
+    if (event?.target?.closest?.('[data-audio-toggle], [data-invitation-reveal]')) return;
     autoScroll.stopped = true;
     if (autoScroll.frameId !== null) cancelAnimationFrame(autoScroll.frameId);
     autoScroll.frameId = null;
@@ -518,8 +530,19 @@
     if (autoScroll.stopped || document.hidden) return;
 
     if (autoScroll.lastTimestamp === null) autoScroll.lastTimestamp = timestamp;
+    if (autoScroll.startedAt === null) autoScroll.startedAt = timestamp;
     const elapsed = Math.min(timestamp - autoScroll.lastTimestamp, 100);
     autoScroll.lastTimestamp = timestamp;
+
+    const accelerationProgress = Math.min(
+      (timestamp - autoScroll.startedAt) / autoScroll.accelerationDuration,
+      1,
+    );
+    const easedAcceleration = accelerationProgress
+      * accelerationProgress
+      * (3 - 2 * accelerationProgress);
+    const currentSpeed = autoScroll.startingSpeed
+      + (autoScroll.speed - autoScroll.startingSpeed) * easedAcceleration;
 
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     if (window.scrollY >= maxScroll - 1) {
@@ -527,19 +550,74 @@
       return;
     }
 
-    autoScroll.position += (autoScroll.speed * elapsed) / 1000;
+    autoScroll.position += (currentSpeed * elapsed) / 1000;
     window.scrollTo({ top: autoScroll.position, behavior: 'auto' });
     autoScroll.frameId = requestAnimationFrame(runAutoScroll);
   };
 
   const startAutoScroll = () => {
-    if (autoScroll.stopped) return;
+    if (autoScroll.stopped || autoScroll.frameId !== null) return;
     autoScroll.frameId = requestAnimationFrame(runAutoScroll);
   };
 
-  window.addEventListener('wheel', stopAutoScroll, { passive: true, once: true });
-  window.addEventListener('touchstart', stopAutoScroll, { passive: true, once: true });
-  window.addEventListener('pointerdown', stopAutoScroll, { passive: true, once: true });
+  const revealInvitation = () => {
+    if (hero?.classList.contains('is-revealed')) return;
+
+    // Keep this call synchronous inside the click handler: delaying it until
+    // after the visual reveal would lose the browser's user activation.
+    startBackgroundAudio();
+
+    hero?.classList.add('is-revealed');
+    revealButton.disabled = true;
+    revealButton.setAttribute('aria-expanded', 'true');
+    revealButton.setAttribute('aria-label', 'Invitation opened');
+
+    const finishReveal = () => {
+      if (document.body.classList.contains('invitation-is-open')) return;
+      document.body.classList.add('invitation-is-open');
+      if (hero) hero.hidden = true;
+
+      if (reducedMotion.matches) return;
+      autoScroll.stopped = false;
+      autoScroll.position = window.scrollY;
+      autoScroll.lastTimestamp = null;
+      autoScroll.startedAt = null;
+      startAutoScroll();
+    };
+
+    hero?.addEventListener('animationend', finishReveal, { once: true });
+    window.setTimeout(finishReveal, reducedMotion.matches ? 0 : 1400);
+  };
+
+  if (hero) {
+    hero.addEventListener('click', revealInvitation);
+  } else {
+    revealButton?.addEventListener('click', revealInvitation);
+  }
+
+  document.querySelector('.site-footer__back')?.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    if (autoScroll.frameId !== null) cancelAnimationFrame(autoScroll.frameId);
+    autoScroll.frameId = null;
+    autoScroll.stopped = true;
+    autoScroll.lastTimestamp = null;
+    autoScroll.startedAt = null;
+
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    document.body.classList.remove('invitation-is-open');
+    hero?.classList.remove('is-revealed');
+    if (hero) hero.hidden = false;
+    if (revealButton) {
+      revealButton.disabled = false;
+      revealButton.setAttribute('aria-expanded', 'false');
+      revealButton.setAttribute('aria-label', 'Tap anywhere to open');
+    }
+  });
+
+  window.addEventListener('wheel', stopAutoScroll, { passive: true });
+  window.addEventListener('touchstart', stopAutoScroll, { passive: true });
+  window.addEventListener('pointerdown', stopAutoScroll, { passive: true });
   window.addEventListener('keydown', (event) => {
     if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) {
       stopAutoScroll();
@@ -548,7 +626,4 @@
   reducedMotion.addEventListener?.('change', (event) => {
     if (event.matches) stopAutoScroll();
   });
-
-  // Let the hero breathe before the invitation begins moving.
-  window.setTimeout(startAutoScroll, 2000);
 })();
