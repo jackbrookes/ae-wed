@@ -43,17 +43,91 @@
     if (target) target.textContent = privateDetails[field];
   });
 
-  const whatsappLink = document.querySelector('[data-whatsapp-link]');
-  const whatsappLabel = document.querySelector('[data-whatsapp-label]');
-  if (whatsappLink) {
-    const message = "Hello Anthony and Eunice, I'd like to RSVP for your wedding celebrations.";
-    whatsappLink.href = `https://wa.me/${privateDetails.phone}?text=${encodeURIComponent(message)}`;
-    whatsappLink.setAttribute(
-      'aria-label',
-      `RSVP to Anthony and Eunice on WhatsApp at ${privateDetails.phoneDisplay}`,
-    );
-  }
-  if (whatsappLabel) whatsappLabel.textContent = privateDetails.phoneDisplay;
+  const bankDialog = document.querySelector('[data-bank-dialog]');
+  const openBankButton = document.querySelector('[data-bank-open]');
+  const closeBankButton = document.querySelector('[data-bank-close]');
+
+  const closeBankDialog = () => {
+    if (bankDialog?.open) bankDialog.close();
+  };
+
+  openBankButton?.addEventListener('click', () => {
+    if (!bankDialog) return;
+    bankDialog.showModal();
+    document.body.classList.add('modal-open');
+  });
+
+  closeBankButton?.addEventListener('click', closeBankDialog);
+  bankDialog?.addEventListener('click', (event) => {
+    if (event.target === bankDialog) closeBankDialog();
+  });
+  bankDialog?.addEventListener('close', () => {
+    document.body.classList.remove('modal-open');
+  });
+
+  const rsvpDialog = document.querySelector('[data-rsvp-dialog]');
+  const openRsvpButton = document.querySelector('[data-rsvp-open]');
+  const closeRsvpButton = document.querySelector('[data-rsvp-close]');
+  const doneRsvpButton = document.querySelector('[data-rsvp-done]');
+  const rsvpForm = document.querySelector('[data-rsvp-form]');
+  const rsvpSubmit = document.querySelector('[data-rsvp-submit]');
+  const rsvpStatus = document.querySelector('[data-rsvp-status]');
+  const rsvpSuccess = document.querySelector('[data-rsvp-success]');
+
+  const closeRsvpDialog = () => {
+    if (rsvpDialog?.open) rsvpDialog.close();
+  };
+
+  openRsvpButton?.addEventListener('click', () => {
+    if (!rsvpDialog) return;
+    rsvpDialog.showModal();
+    document.body.classList.add('modal-open');
+    window.setTimeout(() => document.querySelector('#rsvp-name')?.focus(), 0);
+  });
+
+  closeRsvpButton?.addEventListener('click', closeRsvpDialog);
+  doneRsvpButton?.addEventListener('click', closeRsvpDialog);
+  rsvpDialog?.addEventListener('click', (event) => {
+    if (event.target === rsvpDialog) closeRsvpDialog();
+  });
+  rsvpDialog?.addEventListener('close', () => {
+    document.body.classList.remove('modal-open');
+    rsvpForm?.reset();
+    rsvpForm?.removeAttribute('hidden');
+    if (rsvpSuccess) rsvpSuccess.hidden = true;
+    if (rsvpStatus) rsvpStatus.textContent = '';
+  });
+
+  rsvpForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!rsvpForm.reportValidity()) return;
+
+    if (rsvpSubmit) {
+      rsvpSubmit.disabled = true;
+      rsvpSubmit.textContent = 'Sending…';
+    }
+    if (rsvpStatus) rsvpStatus.textContent = '';
+
+    try {
+      const response = await fetch(rsvpForm.action, {
+        method: 'POST',
+        body: new FormData(rsvpForm),
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) throw new Error('RSVP submission failed');
+
+      rsvpForm.hidden = true;
+      if (rsvpSuccess) rsvpSuccess.hidden = false;
+      doneRsvpButton?.focus();
+    } catch {
+      if (rsvpStatus) rsvpStatus.textContent = 'We could not send your response. Please try again.';
+    } finally {
+      if (rsvpSubmit) {
+        rsvpSubmit.disabled = false;
+        rsvpSubmit.textContent = 'Confirm';
+      }
+    }
+  });
 
   const copyPlainText = async (value) => {
     if (navigator.clipboard?.writeText && window.isSecureContext) {
@@ -97,6 +171,48 @@
     });
   }
 
+  const backgroundAudio = document.querySelector('[data-background-audio]');
+  const audioToggle = document.querySelector('[data-audio-toggle]');
+  if (backgroundAudio && audioToggle) {
+    backgroundAudio.volume = 0.5;
+    backgroundAudio.loop = true;
+
+    // The floating player is a control, not a signal that the visitor wants
+    // to take over scrolling. Keep it from reaching the page-wide pointer
+    // handler that stops the introductory auto-scroll.
+    audioToggle.addEventListener('pointerdown', (event) => event.stopPropagation());
+
+    const syncAudioButton = () => {
+      const isPlaying = !backgroundAudio.paused;
+      audioToggle.classList.toggle('is-playing', isPlaying);
+      audioToggle.setAttribute('aria-label', `${isPlaying ? 'Pause' : 'Play'} background music`);
+      audioToggle.setAttribute('title', `${isPlaying ? 'Pause' : 'Play'} background music`);
+    };
+
+    const tryStartAudio = () => {
+      backgroundAudio.play().then(syncAudioButton).catch(syncAudioButton);
+    };
+
+    audioToggle.addEventListener('click', () => {
+      if (backgroundAudio.paused) {
+        backgroundAudio.play().catch(syncAudioButton);
+      } else {
+        backgroundAudio.pause();
+      }
+      syncAudioButton();
+    });
+
+    backgroundAudio.addEventListener('play', syncAudioButton);
+    backgroundAudio.addEventListener('pause', syncAudioButton);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) backgroundAudio.pause();
+    });
+    window.addEventListener('blur', () => backgroundAudio.pause());
+    window.addEventListener('pagehide', () => backgroundAudio.pause());
+
+    tryStartAudio();
+  }
+
   const inkSelector = [
     '[data-ink]',
     '.section-label',
@@ -112,8 +228,6 @@
     '.dress-code__item p',
     '.gifting__message',
     '.gifting__note',
-    '.bank-details dt',
-    '.bank-details dd',
     '.rsvp__note',
     '.rsvp__button',
     '.closing__date',
@@ -382,4 +496,59 @@
   window.addEventListener('resize', measureAll, { passive: true });
   reducedMotion.addEventListener?.('change', requestUpdate);
   document.fonts?.ready.then(measureAll);
+
+  // Gently invite visitors into the page until they take control of scrolling.
+  // This is intentionally disabled for reduced-motion preferences.
+  const autoScroll = {
+    speed: 70,
+    frameId: null,
+    lastTimestamp: null,
+    position: window.scrollY,
+    stopped: reducedMotion.matches || window.scrollY > 4,
+  };
+
+  const stopAutoScroll = (event) => {
+    if (event?.target?.closest?.('[data-audio-toggle]')) return;
+    autoScroll.stopped = true;
+    if (autoScroll.frameId !== null) cancelAnimationFrame(autoScroll.frameId);
+    autoScroll.frameId = null;
+  };
+
+  const runAutoScroll = (timestamp) => {
+    if (autoScroll.stopped || document.hidden) return;
+
+    if (autoScroll.lastTimestamp === null) autoScroll.lastTimestamp = timestamp;
+    const elapsed = Math.min(timestamp - autoScroll.lastTimestamp, 100);
+    autoScroll.lastTimestamp = timestamp;
+
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    if (window.scrollY >= maxScroll - 1) {
+      stopAutoScroll();
+      return;
+    }
+
+    autoScroll.position += (autoScroll.speed * elapsed) / 1000;
+    window.scrollTo({ top: autoScroll.position, behavior: 'auto' });
+    autoScroll.frameId = requestAnimationFrame(runAutoScroll);
+  };
+
+  const startAutoScroll = () => {
+    if (autoScroll.stopped) return;
+    autoScroll.frameId = requestAnimationFrame(runAutoScroll);
+  };
+
+  window.addEventListener('wheel', stopAutoScroll, { passive: true, once: true });
+  window.addEventListener('touchstart', stopAutoScroll, { passive: true, once: true });
+  window.addEventListener('pointerdown', stopAutoScroll, { passive: true, once: true });
+  window.addEventListener('keydown', (event) => {
+    if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) {
+      stopAutoScroll();
+    }
+  }, { passive: true });
+  reducedMotion.addEventListener?.('change', (event) => {
+    if (event.matches) stopAutoScroll();
+  });
+
+  // Let the hero breathe before the invitation begins moving.
+  window.setTimeout(startAutoScroll, 2000);
 })();

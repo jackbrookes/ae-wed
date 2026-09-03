@@ -61,6 +61,32 @@
   <body>
     <a class="skip-link" href="#invitation">Skip to the invitation</a>
 
+    <audio
+      class="background-audio"
+      data-background-audio
+      src="assets/bg-audio.mp3"
+      preload="auto"
+      autoplay
+      loop
+    ></audio>
+    <button
+      class="audio-toggle"
+      type="button"
+      data-audio-toggle
+      aria-label="Pause background music"
+      title="Pause background music"
+    >
+      <svg class="audio-toggle__icon audio-toggle__icon--music" aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M9 18V5l11-2v13" />
+        <circle cx="6" cy="18" r="3" />
+        <circle cx="17" cy="16" r="3" />
+      </svg>
+      <svg class="audio-toggle__icon audio-toggle__icon--pause" aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M7 5v14M17 5v14" />
+      </svg>
+      <span class="audio-toggle__status">Music</span>
+    </button>
+
     <svg class="svg-sprite" aria-hidden="true">
       <defs>
         <symbol id="ornament-divider" viewBox="0 0 240 32">
@@ -116,13 +142,12 @@
 
     <main id="invitation">
       <section class="names section-shell" aria-labelledby="couple-names">
-        <p class="section-label">JOIN US AS OUR STORY UNFOLDS</p>
         <h1 class="names__title" id="couple-names">
           <span class="name-line ink-reveal" data-ink>Anthony</span>
-          <span class="ampersand" aria-hidden="true">&amp;</span>
+          <span class="ampersand ink-reveal" data-ink>&amp;</span>
           <span class="name-line ink-reveal" data-ink>Eunice</span>
         </h1>
-        <svg class="divider" aria-hidden="true"><use href="#ornament-divider" /></svg>
+        <p class="section-label">INVITE YOU TO JOIN THEM AS THEIR STORY UNFOLDS</p>
       </section>
 
       <section class="events-intro section-shell" aria-labelledby="celebrations-title">
@@ -163,7 +188,7 @@
           <div class="map-card reveal-on-scroll">
             <iframe
               title="Map showing Mmankgodi, Botswana"
-              src="https://www.google.com/maps?q=Mmankgodi%2C%20Botswana&amp;output=embed"
+              src="https://www.google.com/maps?q=Mmankgodi%2C%20Botswana&amp;z=12&amp;output=embed"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
             ></iframe>
@@ -205,7 +230,7 @@
             <div class="map-card">
               <iframe
                 title="Map showing the exact wedding ceremony pin at the Cathedral of the Holy Cross"
-                src="https://www.google.com/maps?q=-24.6588026%2C25.9236953&amp;z=17&amp;output=embed"
+                src="https://www.google.com/maps?q=-24.6588026%2C25.9236953&amp;z=12&amp;output=embed"
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
               ></iframe>
@@ -218,7 +243,7 @@
             <div class="map-card">
               <iframe
                 title="Map showing Grand Bay Botanical Gardens in Gaborone"
-                src="https://www.google.com/maps?q=Grand%20Bay%20Botanical%20Gardens%2C%20Gaborone%2C%20Botswana&amp;output=embed"
+                src="https://www.google.com/maps?q=Grand%20Bay%20Botanical%20Gardens%2C%20Gaborone%2C%20Botswana&amp;z=12&amp;output=embed"
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
               ></iframe>
@@ -260,7 +285,7 @@
           <div class="map-card reveal-on-scroll">
             <iframe
               title="Map showing the exact third-day pin near Kanye, Botswana"
-              src="https://www.google.com/maps?q=-24.968235%2C25.345238&amp;z=17&amp;output=embed"
+              src="https://www.google.com/maps?q=-24.968235%2C25.345238&amp;z=12&amp;output=embed"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
             ></iframe>
@@ -303,12 +328,35 @@
         <p class="section-label">Gifting</p>
         <h2 class="display-title ink-reveal" id="gifting-title" data-ink>With love, always</h2>
         <p class="gifting__message">Your presence would be the greatest gift we could receive.</p>
-        <p class="gifting__note">
-          Should you still wish to honour us with a gift, a contribution toward our new
-          chapter would be received with heartfelt thanks.
-        </p>
+        <button
+          class="gift-box reveal-on-scroll"
+          type="button"
+          data-bank-open
+          aria-haspopup="dialog"
+          aria-controls="bank-details-dialog"
+        >
+          <img
+            src="assets/wedding-gift-box.png"
+            alt=""
+            width="1302"
+            height="1208"
+          />
+          <span class="gift-box__label">Open our gift details</span>
+        </button>
+      </section>
 
-        <div class="bank-card reveal-on-scroll">
+      <dialog
+        class="bank-dialog"
+        id="bank-details-dialog"
+        data-bank-dialog
+        aria-labelledby="bank-dialog-title"
+      >
+        <div class="bank-card">
+          <button class="bank-dialog__close" type="button" data-bank-close aria-label="Close bank details" autofocus>
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <p class="section-label">A gift with love</p>
+          <h2 class="bank-dialog__title" id="bank-dialog-title">Bank details</h2>
           <dl class="bank-details">
             <div><dt>Bank</dt><dd data-bank-field="bank"></dd></div>
             <div><dt>Name</dt><dd data-bank-field="name"></dd></div>
@@ -321,42 +369,93 @@
           </button>
           <p class="copy-status" data-copy-status role="status" aria-live="polite"></p>
         </div>
-      </section>
+      </dialog>
 
-      <footer class="closing section-shell">
+      <footer class="closing section-shell" aria-labelledby="closing-title">
         <img class="crest crest--small" src="assets/monogram-crest.png" alt="" />
         <p class="section-label">We cannot wait to</p>
-        <p class="closing__script ink-reveal" data-ink>celebrate with you.</p>
-        <svg class="divider" aria-hidden="true"><use href="#ornament-divider" /></svg>
-        <p class="closing__date">26-29 · November · 2026</p>
+        <h2 class="closing__script ink-reveal" id="closing-title" data-ink>celebrate with you.</h2>
         <div class="closing__rsvp reveal-on-scroll">
-          <p class="section-label">Kindly RSVP on WhatsApp</p>
+          <p class="section-label" id="rsvp-title">Kindly RSVP</p>
           <p class="rsvp__note">
-            Let us know if you will be joining the celebrations. We would love to hear
-            from you.
+            Let us know if you will be joining the celebrations.
           </p>
-          <a
-            class="rsvp__button"
-            data-whatsapp-link
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img
-              class="whatsapp-icon"
-              src="https://cdn.simpleicons.org/whatsapp/ffffff"
-              alt=""
-              width="32"
-              height="32"
-            />
-            <span class="rsvp__button-copy">
-              <span>Message us on WhatsApp</span>
-              <small data-whatsapp-label></small>
-            </span>
-          </a>
+          <button class="rsvp__button" type="button" data-rsvp-open>
+            Confirm attendance
+          </button>
         </div>
-        <a class="back-to-top" href="#top">Return to the beginning <span aria-hidden="true">↑</span></a>
       </footer>
+
+      <dialog
+        class="rsvp-dialog"
+        data-rsvp-dialog
+        aria-labelledby="rsvp-dialog-title"
+        aria-describedby="rsvp-dialog-description"
+      >
+        <div class="rsvp-card">
+          <button class="rsvp-dialog__close" type="button" data-rsvp-close aria-label="Close RSVP form">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <p class="section-label">Anthony &amp; Eunice</p>
+          <h2 class="rsvp-dialog__title" id="rsvp-dialog-title">Confirm your attendance</h2>
+          <p class="rsvp-dialog__intro" id="rsvp-dialog-description">
+            Please let us know whether you can join us.
+          </p>
+
+          <form
+            class="rsvp-form"
+            action="https://formspree.io/f/xzebglaw"
+            method="POST"
+            data-rsvp-form
+          >
+            <div class="rsvp-form__field rsvp-form__honeypot" aria-hidden="true">
+              <label for="rsvp-company">Leave this field empty</label>
+              <input id="rsvp-company" name="_gotcha" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <div class="rsvp-form__field">
+              <label for="rsvp-name">Name</label>
+              <input id="rsvp-name" name="name" type="text" autocomplete="name" required />
+            </div>
+
+            <div class="rsvp-form__field">
+              <label for="rsvp-contact">Phone number or email</label>
+              <input id="rsvp-contact" name="contact" type="text" autocomplete="email" required />
+            </div>
+
+            <fieldset class="rsvp-form__field rsvp-form__attendance">
+              <legend>Will you attend?</legend>
+              <label>
+                <input name="attendance" type="radio" value="Can attend" required />
+                <span>Can attend</span>
+              </label>
+              <label>
+                <input name="attendance" type="radio" value="Cannot attend" required />
+                <span>Cannot attend</span>
+              </label>
+            </fieldset>
+
+            <button class="rsvp-form__submit" type="submit" data-rsvp-submit>
+              Confirm
+            </button>
+            <p class="rsvp-form__status" data-rsvp-status role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="rsvp-success" data-rsvp-success hidden>
+            <p class="rsvp-success__mark" aria-hidden="true">✓</p>
+            <h3>Thank you</h3>
+            <p>Your response has been received.</p>
+            <button class="rsvp-form__submit" type="button" data-rsvp-done>Close</button>
+          </div>
+        </div>
+      </dialog>
     </main>
+
+    <footer class="site-footer">
+      <p class="site-footer__names">Anthony <span aria-hidden="true">&amp;</span> Eunice</p>
+      <p class="site-footer__details">26–29 November 2026 <span aria-hidden="true">·</span> With love, always</p>
+      <a class="site-footer__back" href="#top">Return to the beginning <span aria-hidden="true">↑</span></a>
+    </footer>
 
     <script src="script.js"></script>
   </body>
