@@ -604,7 +604,6 @@
     autoScroll.lastTimestamp = null;
     autoScroll.startedAt = null;
 
-    window.scrollTo({ top: 0, behavior: 'auto' });
     document.body.classList.remove('invitation-is-open');
     hero?.classList.remove('is-revealed');
     if (hero) hero.hidden = false;
@@ -613,6 +612,11 @@
       revealButton.setAttribute('aria-expanded', 'false');
       revealButton.setAttribute('aria-label', 'Tap anywhere to open');
     }
+
+    // Reset after restoring the hero so its layout cannot move the viewport
+    // away from the beginning. `instant` also overrides the page's smooth
+    // scrolling setting for this explicit reset action.
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   });
 
   window.addEventListener('wheel', stopAutoScroll, { passive: true });
