@@ -518,12 +518,42 @@
     position: window.scrollY,
     stopped: true,
   };
+  let screenWakeLock = null;
+
+  const releaseScreenWakeLock = async () => {
+    if (!screenWakeLock) return;
+    const wakeLock = screenWakeLock;
+    screenWakeLock = null;
+    try {
+      await wakeLock.release();
+    } catch {
+      // The browser may release the lock automatically when the page hides.
+    }
+  };
+
+  const requestScreenWakeLock = async () => {
+    if (screenWakeLock || autoScroll.stopped || document.hidden || !('wakeLock' in navigator)) return;
+    try {
+      const wakeLock = await navigator.wakeLock.request('screen');
+      if (autoScroll.stopped || document.hidden) {
+        await wakeLock.release();
+        return;
+      }
+      screenWakeLock = wakeLock;
+      wakeLock.addEventListener('release', () => {
+        if (screenWakeLock === wakeLock) screenWakeLock = null;
+      }, { once: true });
+    } catch {
+      // Screen Wake Lock is optional and may be unavailable in this browser.
+    }
+  };
 
   const stopAutoScroll = (event) => {
     if (event?.target?.closest?.('[data-audio-toggle], [data-invitation-reveal]')) return;
     autoScroll.stopped = true;
     if (autoScroll.frameId !== null) cancelAnimationFrame(autoScroll.frameId);
     autoScroll.frameId = null;
+    void releaseScreenWakeLock();
   };
 
   const runAutoScroll = (timestamp) => {
@@ -557,8 +587,22 @@
 
   const startAutoScroll = () => {
     if (autoScroll.stopped || autoScroll.frameId !== null) return;
+    void requestScreenWakeLock();
     autoScroll.frameId = requestAnimationFrame(runAutoScroll);
   };
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      void releaseScreenWakeLock();
+      return;
+    }
+    if (!autoScroll.stopped) {
+      autoScroll.frameId = null;
+      autoScroll.lastTimestamp = null;
+      void requestScreenWakeLock();
+      startAutoScroll();
+    }
+  });
 
   const revealInvitation = () => {
     if (hero?.classList.contains('is-revealed')) return;

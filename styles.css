@@ -643,14 +643,6 @@ a {
   filter: sepia(0.45) saturate(0.55) contrast(0.88);
 }
 
-/* Let touch-first visitors scroll past embedded maps without Google Maps
-   interpreting the gesture as an interaction and opening the native app. */
-@media (hover: none) and (pointer: coarse) {
-  .map-card iframe {
-    pointer-events: none;
-  }
-}
-
 .map-card a {
   display: flex;
   gap: 0.85rem;
