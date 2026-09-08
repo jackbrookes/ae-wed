@@ -518,6 +518,25 @@
     position: window.scrollY,
     stopped: true,
   };
+  const interactiveSelector = [
+    'a[href]',
+    'area[href]',
+    'button',
+    'input',
+    'select',
+    'textarea',
+    'label',
+    'summary',
+    'dialog',
+    '[contenteditable]:not([contenteditable="false"])',
+    '[role="button"]',
+    '[role="link"]',
+    '[role="checkbox"]',
+    '[role="radio"]',
+    '[role="switch"]',
+    '[role="tab"]',
+    '[tabindex]:not([tabindex="-1"])',
+  ].join(', ');
   let screenWakeLock = null;
 
   const releaseScreenWakeLock = async () => {
@@ -589,6 +608,21 @@
     if (autoScroll.stopped || autoScroll.frameId !== null) return;
     void requestScreenWakeLock();
     autoScroll.frameId = requestAnimationFrame(runAutoScroll);
+  };
+
+  const resumeAutoScrollFromBackgroundTap = (event) => {
+    if (
+      !document.body.classList.contains('invitation-is-open')
+      || !autoScroll.stopped
+      || reducedMotion.matches
+      || event.target?.closest?.(interactiveSelector)
+    ) return;
+
+    autoScroll.stopped = false;
+    autoScroll.position = window.scrollY;
+    autoScroll.lastTimestamp = null;
+    autoScroll.startedAt = null;
+    startAutoScroll();
   };
 
   document.addEventListener('visibilitychange', () => {
@@ -666,6 +700,7 @@
   window.addEventListener('wheel', stopAutoScroll, { passive: true });
   window.addEventListener('touchstart', stopAutoScroll, { passive: true });
   window.addEventListener('pointerdown', stopAutoScroll, { passive: true });
+  window.addEventListener('click', resumeAutoScrollFromBackgroundTap);
   window.addEventListener('keydown', (event) => {
     if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) {
       stopAutoScroll();
