@@ -178,11 +178,6 @@
     backgroundAudio.volume = 0.5;
     backgroundAudio.loop = true;
 
-    // The floating player is a control, not a signal that the visitor wants
-    // to take over scrolling. Keep it from reaching the page-wide pointer
-    // handler that stops the introductory auto-scroll.
-    audioToggle.addEventListener('pointerdown', (event) => event.stopPropagation());
-
     const syncAudioButton = () => {
       const isPlaying = !backgroundAudio.paused;
       audioToggle.classList.toggle('is-playing', isPlaying);
@@ -610,18 +605,24 @@
     autoScroll.frameId = requestAnimationFrame(runAutoScroll);
   };
 
-  const resumeAutoScrollFromBackgroundTap = (event) => {
+  const toggleAutoScrollFromBackgroundTap = (event) => {
     if (
       !document.body.classList.contains('invitation-is-open')
-      || !autoScroll.stopped
       || reducedMotion.matches
       || event.target?.closest?.(interactiveSelector)
     ) return;
 
+    if (!autoScroll.stopped) {
+      stopAutoScroll();
+      return;
+    }
+
     autoScroll.stopped = false;
     autoScroll.position = window.scrollY;
     autoScroll.lastTimestamp = null;
-    autoScroll.startedAt = null;
+    // A resumed scroll should be immediately noticeable. The slow ramp-up is
+    // reserved for the initial invitation reveal.
+    autoScroll.startedAt = performance.now() - autoScroll.accelerationDuration;
     startAutoScroll();
   };
 
@@ -698,9 +699,8 @@
   });
 
   window.addEventListener('wheel', stopAutoScroll, { passive: true });
-  window.addEventListener('touchstart', stopAutoScroll, { passive: true });
-  window.addEventListener('pointerdown', stopAutoScroll, { passive: true });
-  window.addEventListener('click', resumeAutoScrollFromBackgroundTap);
+  window.addEventListener('touchmove', stopAutoScroll, { passive: true });
+  window.addEventListener('click', toggleAutoScrollFromBackgroundTap, { capture: true });
   window.addEventListener('keydown', (event) => {
     if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) {
       stopAutoScroll();
