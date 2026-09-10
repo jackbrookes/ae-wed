@@ -503,14 +503,34 @@
   // browsers require before playing music with sound.
   const revealButton = document.querySelector('[data-invitation-reveal]');
   const hero = document.querySelector('.hero');
+  const getScrollPosition = () => window.pageYOffset
+    || document.documentElement.scrollTop
+    || document.body.scrollTop
+    || 0;
+  const setScrollPosition = (position) => {
+    // The numeric signature works in older browsers and embedded webviews.
+    window.scrollTo(0, position);
+
+    // Some mobile browsers expose a different scrolling root. Mirror the
+    // position when window.scrollTo did not move the document itself.
+    if (Math.abs(getScrollPosition() - position) > 2) {
+      document.documentElement.scrollTop = position;
+      document.body.scrollTop = position;
+    }
+  };
+
+  if ('scrollRestoration' in window.history) {
+    window.history.scrollRestoration = 'manual';
+  }
+
   const autoScroll = {
-    speed: 70,
-    startingSpeed: 8,
-    accelerationDuration: 5000,
+    speed: 50,
+    startingSpeed: 32,
+    accelerationDuration: 1200,
     frameId: null,
     lastTimestamp: null,
     startedAt: null,
-    position: window.scrollY,
+    position: getScrollPosition(),
     stopped: true,
   };
   const interactiveSelector = [
@@ -567,6 +587,7 @@
     autoScroll.stopped = true;
     if (autoScroll.frameId !== null) cancelAnimationFrame(autoScroll.frameId);
     autoScroll.frameId = null;
+    document.documentElement.classList.remove('auto-scroll-active');
     void releaseScreenWakeLock();
   };
 
@@ -588,19 +609,25 @@
     const currentSpeed = autoScroll.startingSpeed
       + (autoScroll.speed - autoScroll.startingSpeed) * easedAcceleration;
 
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    if (window.scrollY >= maxScroll - 1) {
+    const documentHeight = Math.max(
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight,
+    );
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const maxScroll = documentHeight - viewportHeight;
+    if (getScrollPosition() >= maxScroll - 1) {
       stopAutoScroll();
       return;
     }
 
-    autoScroll.position += (currentSpeed * elapsed) / 1000;
-    window.scrollTo({ top: autoScroll.position, behavior: 'auto' });
+    autoScroll.position = Math.min(maxScroll, autoScroll.position + (currentSpeed * elapsed) / 1000);
+    setScrollPosition(autoScroll.position);
     autoScroll.frameId = requestAnimationFrame(runAutoScroll);
   };
 
   const startAutoScroll = () => {
     if (autoScroll.stopped || autoScroll.frameId !== null) return;
+    document.documentElement.classList.add('auto-scroll-active');
     void requestScreenWakeLock();
     autoScroll.frameId = requestAnimationFrame(runAutoScroll);
   };
@@ -618,7 +645,7 @@
     }
 
     autoScroll.stopped = false;
-    autoScroll.position = window.scrollY;
+    autoScroll.position = getScrollPosition();
     autoScroll.lastTimestamp = null;
     // A resumed scroll should be immediately noticeable. The slow ramp-up is
     // reserved for the initial invitation reveal.
@@ -658,7 +685,7 @@
 
       if (reducedMotion.matches) return;
       autoScroll.stopped = false;
-      autoScroll.position = window.scrollY;
+      autoScroll.position = getScrollPosition();
       autoScroll.lastTimestamp = null;
       autoScroll.startedAt = null;
       startAutoScroll();
@@ -682,6 +709,7 @@
     autoScroll.stopped = true;
     autoScroll.lastTimestamp = null;
     autoScroll.startedAt = null;
+    document.documentElement.classList.remove('auto-scroll-active');
 
     document.body.classList.remove('invitation-is-open');
     hero?.classList.remove('is-revealed');
@@ -693,9 +721,11 @@
     }
 
     // Reset after restoring the hero so its layout cannot move the viewport
-    // away from the beginning. `instant` also overrides the page's smooth
-    // scrolling setting for this explicit reset action.
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    // away from the beginning. Temporarily override the page's smooth-scroll
+    // styling and use the same cross-browser document-root fallback.
+    document.documentElement.classList.add('auto-scroll-active');
+    setScrollPosition(0);
+    document.documentElement.classList.remove('auto-scroll-active');
   });
 
   window.addEventListener('wheel', stopAutoScroll, { passive: true });

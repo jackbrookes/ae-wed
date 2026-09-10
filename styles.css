@@ -24,6 +24,12 @@ html {
   background: #d8cdbb;
 }
 
+/* Programmatic auto-scroll updates every animation frame. Smooth scrolling here
+   makes some browsers continually restart the animation instead of advancing. */
+html.auto-scroll-active {
+  scroll-behavior: auto;
+}
+
 body {
   margin: 0;
   min-width: 320px;
