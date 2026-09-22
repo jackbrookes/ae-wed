@@ -14,10 +14,10 @@ A shared design project for Anthony and Eunice's wedding celebrations in Novembe
 
 | Event | Date | Time | Location |
 | --- | --- | --- | --- |
-| Patlo / Magadi | 26 November 2026 | 6:00 am | Gaborone North ([Map pin](https://www.google.com/maps?q=-24.549808502197266,25.97461700439453&z=17&hl=en)) |
-| Wedding ceremony | 28 November 2026 | 12 noon | Cathedral of the Holy Cross, Gaborone |
-| Reception | 28 November 2026 | 3:00 pm | Grand Bay Botanical Gardens |
-| Kgoroso ya Ngwetsi | 29 November 2026 | 1:00 pm | Kanye |
+| Patlo / Magadi | 26 November 2026 | 06:00 | Gaborone North ([Map pin](https://www.google.com/maps?q=-24.549808502197266,25.97461700439453&z=17&hl=en)) |
+| Wedding ceremony | 28 November 2026 | 12:00 | Cathedral of the Holy Cross, Gaborone |
+| Reception | 28 November 2026 | 15:00 | Grand Bay Botanical Gardens |
+| Kgoroso ya Ngwetsi | 29 November 2026 | 13:00 | Kanye |
 
 The website also includes the Royal Elegance dress code (Royal Blue and Royal Burgundy
 for ladies; Antique Gold and Charcoal for gentlemen), a gifting section with one-click
