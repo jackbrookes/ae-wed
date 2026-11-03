@@ -14,7 +14,7 @@ A shared design project for Anthony and Eunice's wedding celebrations in Novembe
 
 | Event | Date | Time | Location |
 | --- | --- | --- | --- |
-| Patlo / Magadi | 26 November 2026 | 06:00 | Gaborone North ([Map pin](https://www.google.com/maps?q=-24.549808502197266,25.97461700439453&z=17&hl=en)) |
+| Patlo / Magadi | 26 November 2026 | 06:00 | Bahurutshe Cultural Village, Mmankgodi ([Map pin](https://www.google.com/maps/place/7JRP%2BVQ2+Bahurutshe+Cultural+Village,+Unnamed+Road,+Mmankgodi/data=!4m2!3m1!1s0x1ea4ace889340ff5:0x22ac433efc5d0e79!18m1!1e1?utm_source=mstt_1&entry=gps&coh=192189&g_ep=CAESBzI2LjQyLjIYACCenQoqxwEsOTQyNjc3MjcsOTQyOTIxOTUsOTQyOTk1MzIsMTAwNzk2NDk4LDEwMDc5Nzc2MSwxMDA3OTY1MzUsOTQyODA1NzYsOTQyMDczOTQsOTQyMDc1MDYsOTQyMDg1MDYsOTQyMTg2NTMsOTQyMjk4MzksOTQyNzUxNjgsOTQyNzk2MTksMTAwODM1NzEwLDEwMDgyNTAyNSwxMDA4MjAyMzcsMTAwODIyNDk0LDEwMDgyNzk3NSwxMDA4MzgzNTksMTIxODE2NDYxQgJCVw%3D%3D&skid=27d54029-d357-48e5-9c6f-728ae6290d05&g_st=aw)) |
 | Wedding ceremony | 28 November 2026 | 12:00 | Cathedral of the Holy Cross, Gaborone |
 | Reception | 28 November 2026 | 15:00 | Grand Bay Botanical Gardens |
 | Kgoroso ya Ngwetsi | 29 November 2026 | 13:00 | Kanye |
