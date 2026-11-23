@@ -1,10 +1,11 @@
-"""Build A1 programme posters from the catalogue. Requires ReportLab and PyMuPDF."""
+"""Build A1 programme posters from the catalogue. Requires ReportLab, fontTools and PyMuPDF."""
 from io import BytesIO
 from pathlib import Path
 import re
 from xml.etree import ElementTree
 
 import fitz
+from fontTools.ttLib import TTFont as OpenTypeFont
 from reportlab.lib.colors import HexColor
 from reportlab.lib.pagesizes import A1
 from reportlab.lib.units import mm
@@ -66,10 +67,7 @@ def build(section, slug, title, motifs):
     event_size = 24 if len(entries) < 16 else 22.5
     labels = [label.capitalize().replace(' & dance floor', '\n& dance floor').splitlines()
               for _, label in entries]
-    left_extent = 20 + max(pdfmetrics.stringWidth(time, 'Sans', 15) for time, _ in entries)
-    right_extent = 20 + max(pdfmetrics.stringWidth(line, 'Serif', event_size)
-                            for lines in labels for line in lines)
-    spinex = (WIDTH + left_extent - right_extent) / 2
+    spinex = 190  # Common timeline position in mm on all three posters.
     first, last = 232, 747
     pitch = (last-first)/(len(entries)-1)
     c.setLineWidth(.55)
@@ -88,7 +86,7 @@ def build(section, slug, title, motifs):
         c.setFillColor(HexColor(IVORY))
         c.circle(spinex, HEIGHT-cy, 9.7, stroke=0, fill=1)
         positions.append((motif, spinex-8, cy-8))
-        text(time, spinex-20, cy+4.6, 'Sans', 15, BRONZE, c.drawRightString)
+        text(time, spinex-20, cy+4.6, 'Time', 15, BRONZE, c.drawRightString)
         for j, line in enumerate(labels[i]):
             text(line, spinex+20, cy+6+j*20, 'Serif', event_size, NAVY, c.drawString)
     c.showPage()
@@ -112,6 +110,20 @@ def build(section, slug, title, motifs):
 if __name__ == '__main__':
     for alias, filename in [('Sans','Montserrat-Medium'), ('Script','PinyonScript-Regular'), ('Serif','CormorantGaramond-Regular')]:
         pdfmetrics.registerFont(TTFont(alias, str(ROOT/f'assets/fonts/{filename}.ttf')))
+    # ReportLab uses the default cmap. Select Montserrat's tabular figures for time text.
+    with OpenTypeFont(ROOT/'assets/fonts/Montserrat-Medium.ttf') as font:
+        cmap = font.getBestCmap()
+        figures = {ord(d): cmap[ord(d)] + '.tf' for d in '0123456789'}
+        for table in font['cmap'].tables:
+            if table.isUnicode():
+                table.cmap.update(figures)
+        for record in font['name'].names:
+            if record.nameID == 6:
+                record.string = 'Montserrat-Medium-Tabular'.encode(record.getEncoding())
+        tabular = BytesIO()
+        font.save(tabular)
+        tabular.seek(0)
+        pdfmetrics.registerFont(TTFont('Time', tabular))
     catalogue = (ROOT/'references/wedding-programmes.md').read_text()
     for section, programme in zip(catalogue.split('## Day ')[1:], PROGRAMMES, strict=True):
         build(section, *programme)
