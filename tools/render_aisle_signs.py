@@ -1,4 +1,5 @@
 """Render the A4 aisle signs and impose the same pages on a single A1 sheet."""
+import argparse
 from pathlib import Path
 
 import fitz
@@ -48,12 +49,11 @@ def ink_bounds(font, text):
     return left, bottom, right, top
 
 
-def draw_signs():
-    path = ART / 'Satisfy-Regular.ttf'
-    pdfmetrics.registerFont(ReportLabFont('Satisfy', str(path)))
+def draw_signs(path):
+    pdfmetrics.registerFont(ReportLabFont('HelloSweety', str(path)))
     font = TTFont(path)
     rl_config.useA85 = False
-    canvas = Canvas(str(A4_FILE), pagesize=A4, initialFontName='Satisfy', invariant=True)
+    canvas = Canvas(str(A4_FILE), pagesize=A4, initialFontName='HelloSweety', invariant=True)
     canvas.setTitle('Aisle signs | Anthony & Eunice')
     for lines in SIGNS:
         canvas.scale(mm, mm)
@@ -66,24 +66,12 @@ def draw_signs():
             sizes.append((left, bottom, right, top, scale))
         gap = 11 if len(lines) == 3 else 8
         block_height = sum((top-bottom)*scale for _, bottom, _, top, scale in sizes) + gap*(len(lines)-1)
-        y = 158 + block_height/2
+        y = 162 + block_height/2
         canvas.setFillColor(HexColor('#FBF8F1'))
         for line, (left, bottom, right, top, scale) in zip(lines, sizes):
-            canvas.setFont('Satisfy', scale * font['head'].unitsPerEm)
+            canvas.setFont('HelloSweety', scale * font['head'].unitsPerEm)
             canvas.drawString(105 - (left+right)*scale/2, y-top*scale, line)
             y -= (top-bottom)*scale + gap
-        canvas.setStrokeColor(HexColor('#D6BD82'))
-        canvas.setLineWidth(1.1)
-        canvas.setLineCap(1)
-        flourish = canvas.beginPath()
-        flourish.moveTo(67, 43)
-        flourish.curveTo(80, 48, 89, 40, 99, 42)
-        flourish.moveTo(105, 39)
-        flourish.curveTo(90, 55, 101, 57, 105, 48)
-        flourish.curveTo(110, 57, 120, 54, 105, 39)
-        flourish.moveTo(111, 42)
-        flourish.curveTo(121, 40, 130, 48, 143, 43)
-        canvas.drawPath(flourish)
         canvas.showPage()
     canvas.save()
 
@@ -111,5 +99,7 @@ def draw_sheet():
 
 
 if __name__ == '__main__':
-    draw_signs()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("font", type=Path, help="Path to the supplied HelloSweety.ttf")
+    draw_signs(parser.parse_args().font)
     draw_sheet()
