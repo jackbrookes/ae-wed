@@ -23,3 +23,9 @@ The [three-page PDF proof](../output/pdf/anthony-eunice-programmes-proof.pdf) us
 | Event text | 11 pt Montserrat times above 10 pt Montserrat Medium uppercase labels. Times use `HH:MM`, and the wedding’s final entry retains its two-line label. |
 | Timeline | Continuous 0.65 pt centre rule, filled diamonds at the opening and each event pair, and 29 pt from the rule to each inside text edge. Row baselines are 100 pt apart for Patlo & Magadi, 69 pt for the wedding celebration, and 81 pt for Kgoroso. |
 | Icons | 12 pt gold line-art symbols and colour emoji in a 12 pt box. Icons retain their original assignments and sit under each event label. |
+
+## A1 portrait programmes
+
+The [Patlo & Magadi](../output/pdf/patlo-magadi-a1.pdf), [wedding celebration](../output/pdf/wedding-celebration-a1.pdf), and [Kgoroso](../output/pdf/kgoroso-a1.pdf) posters each occupy one 594 × 841 mm page. The double gold border and botanical corner ornaments come from the invitation design. Each timeline has its own row spacing to balance its programme against the frame.
+
+All fonts are embedded as subsets, including the symbol font. Text, borders, ornaments, and timeline markers are vector artwork. Colour emoji are embedded at 305 pixels per inch at full print size.
