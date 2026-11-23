@@ -71,6 +71,10 @@ a browser should still be treated as public information.
 
 ## Reference material
 
+The [three-day programme catalogue](references/wedding-programmes.md) transcribes the supplied Word documents for 26, 28, and 29 November 2026.
+
+The [programme design reference](references/programme-design.md) records the original vertical timelines and the specifications used in the [refined PDF proof](output/pdf/anthony-eunice-programmes-proof.pdf).
+
 The original visual reference is stored at [`references/anthony-eunice-invitation-reference.png`](references/anthony-eunice-invitation-reference.png). It is a source of art direction, not yet a production-ready asset. Any reusable monogram, borders, flourishes, or icons should be recreated as clean vector artwork for consistent scaling and print quality.
 
 ## Production notes
