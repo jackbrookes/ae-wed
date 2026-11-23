@@ -50,26 +50,27 @@ def ink_bounds(font, text):
 
 
 def draw_signs(path):
-    pdfmetrics.registerFont(ReportLabFont('HelloSweety', str(path)))
+    pdfmetrics.registerFont(ReportLabFont('HelloSweets', str(path)))
     font = TTFont(path)
     rl_config.useA85 = False
-    canvas = Canvas(str(A4_FILE), pagesize=A4, initialFontName='HelloSweety', invariant=True)
+    canvas = Canvas(str(A4_FILE), pagesize=A4, initialFontName='HelloSweets', invariant=True)
     canvas.setTitle('Aisle signs | Anthony & Eunice')
     for lines in SIGNS:
         canvas.scale(mm, mm)
         canvas.drawImage(str(ART/'aisle-sign-template-a4.jpg'), 0, 0, 210, 297)
+        main_height = 44 if len(lines) == 4 else 49
         sizes = []
         for line in lines:
             left, bottom, right, top = ink_bounds(font, line)
-            target_height = 29 if line in ('is', 'in the', 'all', 'does not') else 48
+            target_height = 26 if line in ('is', 'in the', 'all', 'does not') else main_height
             scale = min(163/(right-left), target_height/(top-bottom))
             sizes.append((left, bottom, right, top, scale))
         gap = 11 if len(lines) == 3 else 8
         block_height = sum((top-bottom)*scale for _, bottom, _, top, scale in sizes) + gap*(len(lines)-1)
-        y = 162 + block_height/2
+        y = 168 + block_height/2
         canvas.setFillColor(HexColor('#FBF8F1'))
         for line, (left, bottom, right, top, scale) in zip(lines, sizes):
-            canvas.setFont('HelloSweety', scale * font['head'].unitsPerEm)
+            canvas.setFont('HelloSweets', scale * font['head'].unitsPerEm)
             canvas.drawString(105 - (left+right)*scale/2, y-top*scale, line)
             y -= (top-bottom)*scale + gap
         canvas.showPage()
@@ -100,6 +101,6 @@ def draw_sheet():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("font", type=Path, help="Path to the supplied HelloSweety.ttf")
+    parser.add_argument("font", type=Path, help="Path to the supplied Hello Sweets.ttf")
     draw_signs(parser.parse_args().font)
     draw_sheet()
