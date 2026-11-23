@@ -65,7 +65,7 @@ def build(section, slug, title, motifs):
     text(title, WIDTH/2, 66, 'Serif', 28, NAVY, c.drawCentredString)
     text('Anthony & Eunice', WIDTH/2, 126, 'Script', 56, NAVY, c.drawCentredString)
     text(date, WIDTH/2, 181, 'Sans', 13, BRONZE, c.drawCentredString)
-    event_font, event_size = ('Sans', 17.5) if has_venues else ('Serif', 24)
+    event_size = 16 if has_venues else 24
     spinex = 190  # Common timeline position in mm on all three posters.
     first, last = (216 if has_venues else 232), 747
     venue_gap = 22
@@ -105,8 +105,16 @@ def build(section, slug, title, motifs):
         text(time, spinex-20, cy+4.6, 'Time', 15, BRONZE, c.drawRightString)
         lines = label.capitalize().replace(' & dance floor', '\n& dance floor').splitlines()
         for j, line in enumerate(lines):
-            text(line, spinex+20, cy+4.6+j*20 if has_venues else cy+6+j*20,
-                 event_font, event_size, NAVY, c.drawString)
+            if has_venues:
+                c.setFillColor(HexColor(NAVY))
+                event = c.beginText(spinex+20, HEIGHT-cy-5-j*18)
+                event.setFont('Serif', event_size)
+                event.setCharSpace(.65)
+                event.textOut(line.upper())
+                event.setCharSpace(0)
+                c.drawText(event)
+            else:
+                text(line, spinex+20, cy+6+j*20, 'Serif', event_size, NAVY, c.drawString)
     c.showPage()
     c.save()
     with fitz.open('pdf', data.getvalue()) as doc:
