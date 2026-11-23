@@ -30,7 +30,7 @@ MOTIFS = {
 }
 PROGRAMMES = [
     ('patlo-magadi', 'Patlo & Magadi programme', 'sprig book sprig sprig rings goblet bell flower'),
-    ('wedding-celebration', 'Wedding celebration', 'sprig rings camera bell book sprig goblet goblet lyre lyre lyre lyre cake flower sprig lyre'),
+    ('wedding-celebration', 'Wedding celebration', 'sprig book sprig rings camera bell lyre book sprig goblet goblet lyre lyre lyre lyre cake flower sprig lyre'),
     ('kgoroso', 'Kgoroso programme', 'sprig camera bell book sprig goblet goblet lyre rings bell flower lyre'),
 ]
 
@@ -46,7 +46,8 @@ def place(page, drawing, x, y, size):
 
 def build(section, slug, title, motifs):
     date = re.search(r'\*\*(.+?)\*\*', section)[1]
-    entries = re.findall(r'^\| (\d\d:\d\d) \| (.*?) \|', section, re.M)
+    rows = re.findall(r'^### (.+)$|^\| (\d\d:\d\d) \| (.*?) \|', section, re.M)
+    has_venues = any(venue for venue, _, _ in rows)
     data = BytesIO()
     c = Canvas(data, pagesize=A1, initialFontName='Sans', invariant=True)
     c.setTitle(f'{title} | Anthony & Eunice')
@@ -64,14 +65,19 @@ def build(section, slug, title, motifs):
     text(title, WIDTH/2, 66, 'Serif', 28, NAVY, c.drawCentredString)
     text('Anthony & Eunice', WIDTH/2, 126, 'Script', 56, NAVY, c.drawCentredString)
     text(date, WIDTH/2, 181, 'Sans', 13, BRONZE, c.drawCentredString)
-    event_size = 24 if len(entries) < 16 else 22.5
-    labels = [label.capitalize().replace(' & dance floor', '\n& dance floor').splitlines()
-              for _, label in entries]
+    event_size = 20 if has_venues else 24
     spinex = 190  # Common timeline position in mm on all three posters.
-    first, last = 232, 747
-    pitch = (last-first)/(len(entries)-1)
+    first, last = (216 if has_venues else 232), 747
+    pitch = (last-first)/(len(rows)-1)
     c.setLineWidth(.55)
-    c.line(spinex, HEIGHT-first, spinex, HEIGHT-last-21)
+    segment_start = first
+    for i, (venue, _, _) in enumerate(rows):
+        if venue:
+            heading_y = first+i*pitch
+            if i:
+                c.line(spinex, HEIGHT-segment_start, spinex, HEIGHT-heading_y+pitch/2)
+            segment_start = heading_y+pitch
+    c.line(spinex, HEIGHT-segment_start, spinex, HEIGHT-last-21)
     end = c.beginPath()
     y = HEIGHT-last-21
     end.moveTo(spinex, y+2.8)
@@ -81,13 +87,18 @@ def build(section, slug, title, motifs):
     c.setFillColor(HexColor(GOLD))
     c.drawPath(end, stroke=0, fill=1)
     positions = []
-    for i, ((time, label), motif) in enumerate(zip(entries, motifs.split(), strict=True)):
+    event_motifs = iter(motifs.split())
+    for i, (venue, time, label) in enumerate(rows):
         cy = first+i*pitch
+        if venue:
+            text(venue, spinex+20, cy+5, 'Sans', 17, BRONZE, c.drawString)
+            continue
         c.setFillColor(HexColor(IVORY))
         c.circle(spinex, HEIGHT-cy, 9.7, stroke=0, fill=1)
-        positions.append((motif, spinex-8, cy-8))
+        positions.append((next(event_motifs), spinex-8, cy-8))
         text(time, spinex-20, cy+4.6, 'Time', 15, BRONZE, c.drawRightString)
-        for j, line in enumerate(labels[i]):
+        lines = label.capitalize().replace(' & dance floor', '\n& dance floor').splitlines()
+        for j, line in enumerate(lines):
             text(line, spinex+20, cy+6+j*20, 'Serif', event_size, NAVY, c.drawString)
     c.showPage()
     c.save()

@@ -27,12 +27,22 @@ Source document: `ANTHONY EUNICE PROGRAMME.docx`
 
 > WELCOME TO THE WEDDING CELEBRATION OF Anthony & Eunice
 
+### Holy Cross Cathedral
+
+| Time | Programme item | Icon |
+| --- | --- | --- |
+| 08:30 | GUESTS ARRIVE | ♡ |
+| 09:00 | CHURCH SERVICE BEGINS | ♔ |
+
+### GrandBay Botanical Garden
+
 | Time | Programme item | Icon |
 | --- | --- | --- |
 | 10:30 | GUESTS ARRIVE | ♡ |
 | 11:30 | ARRIVAL OF THE BRIDAL PARTY | 💍 |
 | 11:35 | PHOTO SESSION | ♡ |
 | 12:00 | RECEPTION BEGINS | ♡ |
+| 12:15 | INTRODUCTORY DANCE | ♫ |
 | 12:30 | WELCOME PRAYER | ♔ |
 | 12:40 | WELCOME REMARKS | ♫ |
 | 12:45 | TOASTS & INTRODUCTIONS | 🥂 |
