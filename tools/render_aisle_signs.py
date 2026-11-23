@@ -55,9 +55,14 @@ def draw_signs(path):
     rl_config.useA85 = False
     canvas = Canvas(str(A4_FILE), pagesize=A4, initialFontName='HelloSweets', invariant=True)
     canvas.setTitle('Aisle signs | Anthony & Eunice')
-    for lines in SIGNS:
+    for index, lines in enumerate(SIGNS):
         canvas.scale(mm, mm)
+        canvas.saveState()
+        if index % 2:
+            canvas.translate(210, 0)
+            canvas.scale(-1, 1)
         canvas.drawImage(str(ART/'aisle-sign-template-a4.jpg'), 0, 0, 210, 297)
+        canvas.restoreState()
         main_height = 44 if len(lines) == 4 else 49
         sizes = []
         for line in lines:
