@@ -26,6 +26,8 @@ The [three-page PDF proof](../output/pdf/anthony-eunice-programmes-proof.pdf) us
 
 ## A1 portrait programmes
 
-The [Patlo & Magadi](../output/pdf/patlo-magadi-a1.pdf), [wedding celebration](../output/pdf/wedding-celebration-a1.pdf), and [Kgoroso](../output/pdf/kgoroso-a1.pdf) posters each occupy one 594 × 841 mm page. The double gold border and botanical corner ornaments come from the invitation design. Each timeline has its own row spacing to balance its programme against the frame.
+The [Patlo & Magadi](../output/pdf/patlo-magadi-a1.pdf), [wedding celebration](../output/pdf/wedding-celebration-a1.pdf), and [Kgoroso](../output/pdf/kgoroso-a1.pdf) posters each occupy one 594 × 841 mm page. The double gold border and botanical corners use the invitation artwork. Each event has its own stop, with a Montserrat time on the left and a sentence-case Cormorant Garamond label on the right. The Pinyon Script names sit above a written-out date. Each poster centres the schedule using its longest line and closes with one filled gold diamond.
 
-All fonts are embedded as subsets, including the symbol font. Text, borders, ornaments, and timeline markers are vector artwork. Colour emoji are embedded at 305 pixels per inch at full print size.
+The original vector icons include a sprig for arrivals, an open book for prayers, a goblet for meals and toasts, and a lyre for music and dance. All artwork scales to the printer’s resolution. Each PDF embeds the three typefaces as subsets.
+
+Run `python tools/render_programme_posters.py` with ReportLab and PyMuPDF installed to rebuild the posters from the programme catalogue.
