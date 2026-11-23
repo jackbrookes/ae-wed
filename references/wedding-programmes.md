@@ -1,6 +1,6 @@
 # Anthony + Eunice wedding programmes
 
-The schedules below follow the wording and order of the supplied Word documents. Dates and times use a consistent format. Each pair of entries reads left to right in the original timeline.
+The schedules below follow the order of the supplied Word documents, with minor copy edits and consistent date and time formats. Each pair of entries reads left to right in the original timeline.
 
 ## Day 1 — Patlo & Magadi
 
@@ -16,10 +16,8 @@ Source document: `PATLO.docx`
 | 08:00 | PATLO YA BOMME | 👩 |
 | 09:00 | KAPESO YA BANYADI KE MORUTI | 💑 |
 | 09:30 | BRUNCH IS SERVED | 🥂 |
-| 10:30 | ANNOUNCMENTS | ♡ |
+| 10:30 | ANNOUNCEMENTS | ♡ |
 | 10:35 | CLOSING | ♡ |
-
-The source spells “ANNOUNCMENTS” as shown and writes 07:00 and 07:05 as `0700` and `0705`.
 
 ## Day 2 — Wedding celebration
 
@@ -32,7 +30,7 @@ Source document: `ANTHONY EUNICE PROGRAMME.docx`
 | Time | Programme item | Icon |
 | --- | --- | --- |
 | 10:30 | GUESTS ARRIVE | ♡ |
-| 11:30 | ARRIVAL OF BRIDAL PARTY | 💍 |
+| 11:30 | ARRIVAL OF THE BRIDAL PARTY | 💍 |
 | 11:35 | PHOTO SESSION | ♡ |
 | 12:00 | RECEPTION BEGINS | ♡ |
 | 12:30 | WELCOME PRAYER | ♔ |
@@ -46,7 +44,7 @@ Source document: `ANTHONY EUNICE PROGRAMME.docx`
 | 16:00 | CAKE CUTTING | 🍰 |
 | 16:45 | BOUQUET & GARTER TOSS | ❀ |
 | 17:00 | CLOSING REMARKS | ♡ |
-| 17:15 | BRIDAL PARTY ENTERTAINMENT & DANCE FLOOR OPEN | ♫ |
+| 17:15 | BRIDAL PARTY ENTERTAINMENT & DANCE FLOOR OPENS | ♫ |
 
 ## Day 3 — Kgoroso
 
