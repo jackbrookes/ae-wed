@@ -65,7 +65,7 @@ def build(section, slug, title, motifs):
     text(title, WIDTH/2, 66, 'Serif', 28, NAVY, c.drawCentredString)
     text('Anthony & Eunice', WIDTH/2, 126, 'Script', 56, NAVY, c.drawCentredString)
     text(date, WIDTH/2, 181, 'Sans', 13, BRONZE, c.drawCentredString)
-    event_size = 16 if has_venues else 24
+    event_size = 20 if has_venues else 24
     spinex = 190  # Common timeline position in mm on all three posters.
     first, last = (216 if has_venues else 232), 747
     venue_gap = 22
@@ -97,7 +97,13 @@ def build(section, slug, title, motifs):
     event_motifs = iter(motifs.split())
     for (venue, time, label), cy in zip(rows, row_positions):
         if venue:
-            text(venue, spinex+20, cy+5, 'Serif', 22, BRONZE, c.drawString)
+            c.setFillColor(HexColor(BRONZE))
+            heading = c.beginText(spinex+20, HEIGHT-cy-5)
+            heading.setFont('Serif', 16)
+            heading.setCharSpace(.65)
+            heading.textOut(venue.upper())
+            heading.setCharSpace(0)
+            c.drawText(heading)
             continue
         c.setFillColor(HexColor(IVORY))
         c.circle(spinex, HEIGHT-cy, 9.7, stroke=0, fill=1)
@@ -105,16 +111,7 @@ def build(section, slug, title, motifs):
         text(time, spinex-20, cy+4.6, 'Time', 15, BRONZE, c.drawRightString)
         lines = label.capitalize().replace(' & dance floor', '\n& dance floor').splitlines()
         for j, line in enumerate(lines):
-            if has_venues:
-                c.setFillColor(HexColor(NAVY))
-                event = c.beginText(spinex+20, HEIGHT-cy-5-j*18)
-                event.setFont('Serif', event_size)
-                event.setCharSpace(.65)
-                event.textOut(line.upper())
-                event.setCharSpace(0)
-                c.drawText(event)
-            else:
-                text(line, spinex+20, cy+6+j*20, 'Serif', event_size, NAVY, c.drawString)
+            text(line, spinex+20, cy+6+j*20, 'Serif', event_size, NAVY, c.drawString)
     c.showPage()
     c.save()
     with fitz.open('pdf', data.getvalue()) as doc:
