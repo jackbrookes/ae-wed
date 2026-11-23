@@ -1,8 +1,8 @@
-# Anthony + Eunice programme design
+# Anthony & Eunice programme design
 
 ## Original Word layouts
 
-All three programmes use portrait pages with a centred heading, “Anthony + Eunice” in 30 pt Segoe Script, and a bold 10 pt date with spaced numerals. The timeline sits in a centred, borderless table with two equal event columns and a narrow middle column. Read each pair left to right, then move down. The left event aligns right and the right event aligns left, so both face the centre. A diamond starts the timeline, and each pair has a filled diamond and a short vertical segment in the middle column. Each event stacks its time, uppercase label, and icon.
+All three programmes use portrait pages with a centred heading, the couple’s names in 30 pt Segoe Script, and a bold 10 pt date with spaced numerals. The timeline sits in a centred, borderless table with two equal event columns and a narrow middle column. Read each pair left to right, then move down. The left event aligns right and the right event aligns left, so both face the centre. A diamond starts the timeline, and each pair has a filled diamond and a short vertical segment in the middle column. Each event stacks its time, uppercase label, and icon.
 
 The cells are white and the main ink is charcoal (`#2D3034`). Most times and event labels are bold 8 pt. The event symbols use Segoe UI Symbol, with emoji appearance dependent on the renderer. The [programme catalogue](wedding-programmes.md) records the icon for every entry, including the paired symbols on day 3.
 

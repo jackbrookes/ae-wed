@@ -48,7 +48,7 @@ def build(section, slug, title, motifs):
     entries = re.findall(r'^\| (\d\d:\d\d) \| (.*?) \|', section, re.M)
     data = BytesIO()
     c = Canvas(data, pagesize=A1, initialFontName='Sans', invariant=True)
-    c.setTitle(f'{title} | Anthony + Eunice')
+    c.setTitle(f'{title} | Anthony & Eunice')
     c.scale(mm, mm)
     c.setFillColor(HexColor(IVORY))
     c.rect(0, 0, WIDTH, HEIGHT, stroke=0, fill=1)
@@ -61,7 +61,7 @@ def build(section, slug, title, motifs):
         c.setFillColor(HexColor(colour))
         align(x, HEIGHT-y, s)
     text(title, WIDTH/2, 66, 'Serif', 28, NAVY, c.drawCentredString)
-    text('Anthony + Eunice', WIDTH/2, 126, 'Script', 56, NAVY, c.drawCentredString)
+    text('Anthony & Eunice', WIDTH/2, 126, 'Script', 56, NAVY, c.drawCentredString)
     text(date, WIDTH/2, 181, 'Sans', 13, BRONZE, c.drawCentredString)
     event_size = 24 if len(entries) < 16 else 22.5
     labels = [label.capitalize().replace(' & dance floor', '\n& dance floor').splitlines()

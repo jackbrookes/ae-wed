@@ -1,4 +1,4 @@
-# Anthony + Eunice wedding programmes
+# Anthony & Eunice wedding programmes
 
 The schedules below follow the order of the supplied Word documents, with minor copy edits and consistent date and time formats. Each pair of entries reads left to right in the original timeline.
 
@@ -25,7 +25,7 @@ Source document: `PATLO.docx`
 
 Source document: `ANTHONY EUNICE PROGRAMME.docx`
 
-> WELCOME TO THE WEDDING CELEBRATION OF Anthony + Eunice
+> WELCOME TO THE WEDDING CELEBRATION OF Anthony & Eunice
 
 | Time | Programme item | Icon |
 | --- | --- | --- |
