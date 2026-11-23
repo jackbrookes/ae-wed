@@ -65,17 +65,24 @@ def build(section, slug, title, motifs):
     text(title, WIDTH/2, 66, 'Serif', 28, NAVY, c.drawCentredString)
     text('Anthony & Eunice', WIDTH/2, 126, 'Script', 56, NAVY, c.drawCentredString)
     text(date, WIDTH/2, 181, 'Sans', 13, BRONZE, c.drawCentredString)
-    event_size = 20 if has_venues else 24
+    event_font, event_size = ('Sans', 17.5) if has_venues else ('Serif', 24)
     spinex = 190  # Common timeline position in mm on all three posters.
     first, last = (216 if has_venues else 232), 747
-    pitch = (last-first)/(len(rows)-1)
+    venue_gap = 22
+    breaks = sum(bool(venue) for venue, _, _ in rows[1:])
+    pitch = (last-first-venue_gap*breaks)/(len(rows)-1)
+    row_positions = []
+    extra_space = 0
+    for i, (venue, _, _) in enumerate(rows):
+        if i and venue:
+            extra_space += venue_gap
+        row_positions.append(first+i*pitch+extra_space)
     c.setLineWidth(.55)
     segment_start = first
-    for i, (venue, _, _) in enumerate(rows):
+    for i, ((venue, _, _), heading_y) in enumerate(zip(rows, row_positions)):
         if venue:
-            heading_y = first+i*pitch
             if i:
-                c.line(spinex, HEIGHT-segment_start, spinex, HEIGHT-heading_y+pitch/2)
+                c.line(spinex, HEIGHT-segment_start, spinex, HEIGHT-row_positions[i-1])
             segment_start = heading_y+pitch
     c.line(spinex, HEIGHT-segment_start, spinex, HEIGHT-last-21)
     end = c.beginPath()
@@ -88,10 +95,9 @@ def build(section, slug, title, motifs):
     c.drawPath(end, stroke=0, fill=1)
     positions = []
     event_motifs = iter(motifs.split())
-    for i, (venue, time, label) in enumerate(rows):
-        cy = first+i*pitch
+    for (venue, time, label), cy in zip(rows, row_positions):
         if venue:
-            text(venue, spinex+20, cy+5, 'Sans', 17, BRONZE, c.drawString)
+            text(venue, spinex+20, cy+5, 'Serif', 22, BRONZE, c.drawString)
             continue
         c.setFillColor(HexColor(IVORY))
         c.circle(spinex, HEIGHT-cy, 9.7, stroke=0, fill=1)
@@ -99,7 +105,8 @@ def build(section, slug, title, motifs):
         text(time, spinex-20, cy+4.6, 'Time', 15, BRONZE, c.drawRightString)
         lines = label.capitalize().replace(' & dance floor', '\n& dance floor').splitlines()
         for j, line in enumerate(lines):
-            text(line, spinex+20, cy+6+j*20, 'Serif', event_size, NAVY, c.drawString)
+            text(line, spinex+20, cy+4.6+j*20 if has_venues else cy+6+j*20,
+                 event_font, event_size, NAVY, c.drawString)
     c.showPage()
     c.save()
     with fitz.open('pdf', data.getvalue()) as doc:

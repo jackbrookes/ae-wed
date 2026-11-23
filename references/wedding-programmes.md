@@ -34,7 +34,7 @@ Source document: `ANTHONY EUNICE PROGRAMME.docx`
 | 08:30 | GUESTS ARRIVE | ♡ |
 | 09:00 | CHURCH SERVICE BEGINS | ♔ |
 
-### GrandBay Botanical Garden
+### Grand Bay Botanical Garden
 
 | Time | Programme item | Icon |
 | --- | --- | --- |
